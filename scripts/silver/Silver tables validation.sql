@@ -1,0 +1,97 @@
+-- Validate pk of cust_info
+SELECT
+	CST_ID,
+	COUNT(*)
+FROM
+	BRONZE.CRM_CUST_INFO
+GROUP BY
+	CST_ID
+HAVING
+	COUNT(*) > 1;
+
+-- Validate cst_firstanme unwanted spaces
+SELECT
+	CST_ID,
+	CST_FIRSTNAME
+FROM
+	BRONZE.CRM_CUST_INFO
+WHERE
+	TRIM(CST_FIRSTNAME) <> CST_FIRSTNAME;
+
+-- Validate cst_lastname unwanted spaces
+SELECT
+	CST_ID,
+	CST_LASTNAME
+FROM
+	BRONZE.CRM_CUST_INFO
+WHERE
+	TRIM(CST_LASTNAME) <> CST_LASTNAME;
+
+-- Validate CST_MARITAL_STATUS not in standart form
+SELECT
+	CST_ID,
+	CST_MARITAL_STATUS
+FROM
+	BRONZE.CRM_CUST_INFO
+WHERE
+	UPPER(TRIM(CST_MARITAL_STATUS)) NOT IN ('Married', 'Single', 'n/a');
+
+-- Validate CST_GNDR not in standart form
+SELECT
+	CST_ID,
+	CST_GNDR
+FROM
+	BRONZE.CRM_CUST_INFO
+WHERE
+	UPPER(TRIM(CST_GNDR)) NOT IN ('Male', 'Female', 'n/a');
+
+-- Validate pk of prd_info
+SELECT
+	PRD_ID,
+	COUNT(*)
+FROM
+	BRONZE.CRM_PRD_INFO
+GROUP BY
+	PRD_ID
+HAVING
+	COUNT(*) > 1;
+
+-- Validate PRD_NM unwanted spaces
+SELECT
+	PRD_ID,
+	PRD_NM
+FROM
+	BRONZE.CRM_PRD_INFO
+WHERE
+	TRIM(PRD_NM) <> PRD_NM;
+
+-- Validate Timeline of prd_info start and end date
+SELECT
+	PRD_ID,
+	PRD_START_DT,
+	PRD_END_DT
+FROM
+	BRONZE.CRM_PRD_INFO
+WHERE
+	PRD_END_DT <= PRD_START_DT;
+
+-- Validate Timeline of sales_details order shipping and due dates
+SELECT
+	*
+FROM
+	BRONZE.CRM_SALES_DETAILS
+WHERE
+	SLS_ORDER_DT > SLS_SHIP_DT
+	OR SLS_ORDER_DT > SLS_SHIP_DT
+	OR SLS_DUE_DT < SLS_SHIP_DT
+	OR LENGTH(CAST(SLS_ORDER_DT AS TEXT)) < 8
+	OR LENGTH(CAST(SLS_SHIP_DT AS TEXT)) < 8
+	OR LENGTH(CAST(SLS_DUE_DT AS TEXT)) < 8;
+
+-- Validate on sales value
+SELECT
+	*
+FROM
+	BRONZE.CRM_SALES_DETAILS
+WHERE
+	SLS_SALES <> SLS_QUANTITY * SLS_PRICE;
